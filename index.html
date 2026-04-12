@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prameesh &amp; Raghul — Funded Traders · Gold Specialists</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --gold:#f5c842;--gold2:#e8a020;--gold3:#fff0a0;
+  --green:#00ff88;--blue:#00d4ff;
+  --dark:#04060c;--dark2:#080e1a;--dark3:#0e1828;--dark4:#131e2e;
+  --glass:rgba(255,255,255,0.03);--gb:rgba(255,255,255,0.07);
+  --t1:#eef2ff;--t2:#8894a8;--t3:#4a5568;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--t1);overflow-x:hidden;cursor:none;}
+#cur{width:8px;height:8px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;mix-blend-mode:screen;}
+#cur-ring{width:32px;height:32px;border:1px solid rgba(245,200,66,0.5);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transition:width .2s,height .2s;}
+body::before{content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(245,200,66,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(245,200,66,0.025) 1px,transparent 1px);
+  background-size:70px 70px;pointer-events:none;z-index:0;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 3rem;background:rgba(4,6,12,0.8);backdrop-filter:blur(24px);border-bottom:1px solid rgba(245,200,66,0.1);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:0.15em;background:linear-gradient(90deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--t2);text-decoration:none;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover{color:var(--gold);}
+.ticker-wrap{position:relative;z-index:1;margin-top:68px;background:rgba(245,200,66,0.05);border-top:1px solid rgba(245,200,66,0.12);border-bottom:1px solid rgba(245,200,66,0.12);overflow:hidden;padding:.55rem 0;}
+.ticker-tape{display:flex;gap:2.5rem;animation:tick 30s linear infinite;white-space:nowrap;width:max-content;}
+@keyframes tick{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.ti{font-size:.76rem;font-weight:600;letter-spacing:.06em;color:var(--gold);}
+.ti span{color:var(--t2);margin-right:.35rem;}
+.ti.dn{color:#ff6b6b;}
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:8rem 2rem 4rem;z-index:1;overflow:hidden;}
+.glow{position:absolute;border-radius:50%;filter:blur(140px);opacity:.12;pointer-events:none;}
+.glow.g1{width:700px;height:700px;background:var(--gold);top:-200px;left:-150px;animation:gpulse 7s ease-in-out infinite;}
+.glow.g2{width:500px;height:500px;background:#ff8c00;bottom:-100px;right:-100px;animation:gpulse 7s 3.5s ease-in-out infinite;}
+@keyframes gpulse{0%,100%{transform:scale(1);opacity:.1;}50%{transform:scale(1.2);opacity:.18;}}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;border:1px solid rgba(245,200,66,0.35);color:var(--gold);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;padding:.4rem 1.2rem;border-radius:100px;margin-bottom:2rem;background:rgba(245,200,66,0.07);animation:fu .8s ease both;}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(4rem,11vw,9rem);line-height:.95;margin-bottom:.5rem;animation:fu .8s .15s ease both;letter-spacing:.04em;}
+.hero-title .name-p{background:linear-gradient(135deg,var(--gold) 0%,var(--gold3) 60%,#fff 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-title .name-r{background:linear-gradient(135deg,#ff8c00 0%,var(--gold) 60%,var(--gold3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-amp{font-size:.35em;color:var(--t2);display:block;margin:.15rem 0;font-family:'DM Sans',sans-serif;font-weight:300;letter-spacing:.2em;}
+.hero-sub{font-size:1rem;color:var(--t2);max-width:520px;margin:1.5rem auto 2.5rem;line-height:1.75;animation:fu .8s .3s ease both;}
+.hero-ctas{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fu .8s .45s ease both;}
+.btn-gold{padding:.9rem 2.4rem;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#060810;font-weight:700;font-size:.9rem;border:none;border-radius:10px;cursor:pointer;letter-spacing:.05em;transition:transform .2s,box-shadow .2s;text-decoration:none;display:inline-block;}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(245,200,66,0.4);}
+.btn-ghost{padding:.9rem 2.4rem;border:1px solid rgba(245,200,66,0.25);color:var(--t1);font-weight:500;font-size:.9rem;background:rgba(245,200,66,0.06);border-radius:10px;cursor:pointer;letter-spacing:.05em;transition:border-color .2s,transform .2s;text-decoration:none;display:inline-block;backdrop-filter:blur(10px);}
+.btn-ghost:hover{border-color:rgba(245,200,66,.6);transform:translateY(-3px);}
+.oneyear-banner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:2rem;padding:2.5rem 2rem;background:linear-gradient(135deg,rgba(245,200,66,0.08),rgba(232,160,32,0.04));border-top:1px solid rgba(245,200,66,0.12);border-bottom:1px solid rgba(245,200,66,0.12);flex-wrap:wrap;}
+.oy-icon{font-size:2.5rem;}
+.oy-text h3{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.12em;background:linear-gradient(90deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.oy-text p{color:var(--t2);font-size:.85rem;letter-spacing:.06em;}
+.oy-divider{width:1px;height:50px;background:rgba(245,200,66,0.2);}
+@media(max-width:700px){.oy-divider{display:none;}}
+@keyframes fu{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+.stats-strip{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,1fr);}
+.stat-item{padding:2.2rem 1.5rem;text-align:center;border-right:1px solid var(--gb);background:rgba(8,14,26,0.7);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.06em;background:linear-gradient(135deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.stat-label{font-size:.72rem;color:var(--t2);letter-spacing:.12em;text-transform:uppercase;margin-top:.25rem;}
+@media(max-width:640px){.stats-strip{grid-template-columns:1fr 1fr;}.stat-item:nth-child(2){border-right:none;}.stat-item:nth-child(3),.stat-item:nth-child(4){border-top:1px solid var(--gb);}.stat-item:nth-child(4){border-right:none;}}
+section{position:relative;z-index:1;padding:6rem 2rem;}
+.container{max-width:1160px;margin:0 auto;}
+.section-tag{display:inline-block;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.9rem;border-left:2px solid var(--gold);padding-left:.75rem;}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,5vw,4rem);line-height:1;margin-bottom:.9rem;letter-spacing:.05em;}
+.section-sub{color:var(--t2);font-size:.95rem;line-height:1.75;max-width:540px;}
+.profiles-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:4rem;}
+@media(max-width:700px){.profiles-grid{grid-template-columns:1fr;}}
+.profile-card{background:var(--dark3);border:1px solid var(--gb);border-radius:22px;padding:2.5rem;position:relative;overflow:hidden;transition:transform .3s,border-color .3s;}
+.profile-card:hover{transform:translateY(-8px);}
+.pc-glow{position:absolute;top:-80px;right:-80px;width:250px;height:250px;border-radius:50%;filter:blur(90px);opacity:.12;pointer-events:none;}
+.profile-card.prameesh{border-color:rgba(245,200,66,0.2);}
+.profile-card.prameesh:hover{border-color:rgba(245,200,66,0.55);}
+.profile-card.raghul{border-color:rgba(255,140,0,0.2);}
+.profile-card.raghul:hover{border-color:rgba(255,140,0,0.55);}
+.prameesh .pc-glow{background:var(--gold);}
+.raghul .pc-glow{background:#ff8c00;}
+.profile-initial{width:76px;height:76px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2.2rem;margin-bottom:1.5rem;letter-spacing:.05em;}
+.prameesh .profile-initial{background:rgba(245,200,66,0.1);border:1px solid rgba(245,200,66,0.3);color:var(--gold);}
+.raghul .profile-initial{background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.3);color:#ff8c00;}
+.profile-role{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;margin-bottom:.4rem;}
+.prameesh .profile-role{color:var(--gold);}
+.raghul .profile-role{color:#ff8c00;}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.08em;margin-bottom:.75rem;}
+.profile-bio{color:var(--t2);font-size:.9rem;line-height:1.75;margin-bottom:1.75rem;}
+.profile-tags{display:flex;flex-wrap:wrap;gap:.5rem;}
+.tag{font-size:.7rem;padding:.3rem .8rem;border-radius:100px;letter-spacing:.06em;font-weight:500;}
+.prameesh .tag{background:rgba(245,200,66,0.08);color:var(--gold);border:1px solid rgba(245,200,66,0.2);}
+.raghul .tag{background:rgba(255,140,0,0.08);color:#ff8c00;border:1px solid rgba(255,140,0,0.2);}
+.funded-section{background:var(--dark2);}
+.funded-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:4rem;}
+@media(max-width:800px){.funded-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.funded-grid{grid-template-columns:1fr;}}
+.funded-card{background:var(--dark4);border:1px solid var(--gb);border-radius:18px;padding:1.8rem;position:relative;overflow:hidden;transition:transform .25s,border-color .25s;}
+.funded-card:hover{transform:translateY(-5px);border-color:rgba(0,255,136,0.35);}
+.funded-card::before{content:'✓ CLEARED';position:absolute;top:1rem;right:1rem;font-size:.62rem;font-weight:700;letter-spacing:.12em;padding:.25rem .65rem;border-radius:100px;background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.25);}
+.fc-firm{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--t2);margin-bottom:.4rem;}
+.fc-name{font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:.08em;margin-bottom:.3rem;}
+.fc-amount{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:.05em;background:linear-gradient(135deg,var(--green),#00cfff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.4rem;}
+.fc-who{font-size:.75rem;color:var(--t2);}
+.fc-who span{color:var(--gold);font-weight:600;}
+.fc-bar{margin-top:1.2rem;height:3px;background:rgba(255,255,255,0.07);border-radius:100px;overflow:hidden;}
+.fc-bar-fill{height:100%;background:linear-gradient(90deg,var(--green),#00cfff);border-radius:100px;}
+.gold-section{background:var(--dark);}
+.gold-layout{display:grid;grid-template-columns:1.1fr 1fr;gap:4rem;margin-top:4rem;align-items:start;}
+@media(max-width:860px){.gold-layout{grid-template-columns:1fr;}}
+.gold-card-main{background:var(--dark3);border:1px solid rgba(245,200,66,0.2);border-radius:22px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s;}
+.gold-card-main:hover{border-color:rgba(245,200,66,0.5);}
+.gc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;}
+.gc-left .ticker{font-size:.7rem;color:var(--t2);letter-spacing:.12em;text-transform:uppercase;}
+.gc-left .name{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:.08em;}
+.gc-price{font-family:'Bebas Neue',sans-serif;font-size:2.8rem;letter-spacing:.04em;background:linear-gradient(135deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.gc-change{font-size:.85rem;font-weight:700;color:var(--green);}
+.sparkline-big{width:100%;height:80px;margin-top:.5rem;}
+.gold-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem;}
+.gs-item{background:var(--dark4);border-radius:12px;padding:1rem;}
+.gs-label{font-size:.68rem;color:var(--t2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.35rem;}
+.gs-val{font-size:1.1rem;font-weight:700;color:var(--gold);}
+.gold-side{display:flex;flex-direction:column;gap:1.2rem;}
+.gold-mini{background:var(--dark3);border:1px solid var(--gb);border-radius:16px;padding:1.4rem;transition:transform .2s,border-color .2s;display:flex;align-items:center;gap:1rem;}
+.gold-mini:hover{transform:translateX(6px);border-color:rgba(245,200,66,0.3);}
+.gm-icon{width:44px;height:44px;border-radius:12px;background:rgba(245,200,66,0.08);border:1px solid rgba(245,200,66,0.2);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.gm-label{font-size:.7rem;color:var(--t2);letter-spacing:.1em;text-transform:uppercase;}
+.gm-name{font-weight:600;font-size:.95rem;margin:.2rem 0;}
+.gm-price{font-size:.9rem;font-weight:700;}
+.gm-price.up{color:var(--green);}
+.gm-price.dn{color:#ff6b6b;}
+.gm-chg{font-size:.75rem;margin-left:auto;flex-shrink:0;}
+.gm-chg.up{color:var(--green);}
+.gm-chg.dn{color:#ff6b6b;}
+.goals-section{background:var(--dark2);}
+.goals-layout{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:4rem;}
+@media(max-width:800px){.goals-layout{grid-template-columns:1fr;}}
+.goal-track{margin-bottom:1.8rem;}
+.goal-header{display:flex;justify-content:space-between;margin-bottom:.6rem;align-items:center;}
+.goal-lbl{font-size:.88rem;font-weight:500;}
+.goal-pct{font-size:.82rem;font-weight:700;color:var(--gold);}
+.goal-bar-bg{height:5px;background:rgba(255,255,255,0.07);border-radius:100px;overflow:hidden;}
+.goal-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--gold),var(--gold3));transition:width 1.6s cubic-bezier(.4,0,.2,1);}
+.goal-bar-fill.g2{background:linear-gradient(90deg,var(--green),#00cfff);}
+.goal-bar-fill.g3{background:linear-gradient(90deg,#ff8c00,var(--gold));}
+.goal-meta{font-size:.72rem;color:var(--t2);margin-top:.4rem;}
+.timeline{display:flex;flex-direction:column;gap:.9rem;}
+.tl-item{background:var(--dark4);border:1px solid var(--gb);border-radius:14px;padding:1.1rem 1.3rem;display:flex;align-items:center;gap:.9rem;transition:border-color .2s;}
+.tl-item:hover{border-color:rgba(245,200,66,0.3);}
+.tl-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.done .tl-icon{background:rgba(0,255,136,0.1);}
+.prog .tl-icon{background:rgba(245,200,66,0.1);}
+.soon .tl-icon{background:rgba(255,255,255,0.05);}
+.tl-title{font-size:.88rem;font-weight:500;margin-bottom:.15rem;}
+.tl-date{font-size:.72rem;color:var(--t2);}
+.tl-badge{margin-left:auto;font-size:.65rem;padding:.25rem .6rem;border-radius:100px;font-weight:600;letter-spacing:.07em;flex-shrink:0;}
+.done .tl-badge{background:rgba(0,255,136,0.1);color:var(--green);}
+.prog .tl-badge{background:rgba(245,200,66,0.1);color:var(--gold);}
+.soon .tl-badge{background:rgba(255,255,255,0.06);color:var(--t2);}
+.friend-section{background:var(--dark);text-align:center;}
+.friend-inner{max-width:660px;margin:0 auto;}
+.friend-pair{display:flex;align-items:center;justify-content:center;gap:1.5rem;margin:2.5rem 0;}
+.fp-av{width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.05em;}
+.fp-av.p{background:rgba(245,200,66,0.1);border:2px solid rgba(245,200,66,0.5);color:var(--gold);}
+.fp-av.r{background:rgba(255,140,0,0.1);border:2px solid rgba(255,140,0,0.5);color:#ff8c00;}
+.fp-link{font-size:2rem;color:rgba(245,200,66,0.5);}
+.friend-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:3rem;text-align:left;}
+@media(max-width:560px){.friend-cards{grid-template-columns:1fr;}}
+.fr-card{background:var(--dark3);border:1px solid var(--gb);border-radius:16px;padding:1.3rem 1.5rem;transition:border-color .2s;}
+.fr-card:hover{border-color:rgba(245,200,66,0.3);}
+.fr-icon{font-size:1.4rem;margin-bottom:.6rem;}
+.fr-title{font-weight:600;font-size:.92rem;margin-bottom:.3rem;}
+.fr-desc{color:var(--t2);font-size:.8rem;line-height:1.6;}
+footer{background:var(--dark2);border-top:1px solid rgba(245,200,66,0.1);padding:3rem 2rem;text-align:center;position:relative;z-index:1;}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:.15em;background:linear-gradient(90deg,var(--gold),var(--gold3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.5rem;}
+.f-names{color:var(--t2);font-size:.82rem;letter-spacing:.08em;margin-bottom:1.5rem;}
+.f-copy{color:var(--t3);font-size:.75rem;}
+.social-links{display:flex;gap:.8rem;justify-content:center;margin-bottom:1.5rem;}
+.sl{width:38px;height:38px;border:1px solid var(--gb);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--t2);text-decoration:none;font-size:.9rem;transition:border-color .2s,color .2s;}
+.sl:hover{border-color:var(--gold);color:var(--gold);}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+@media(max-width:500px){nav{padding:1rem 1.2rem;}.nav-links{gap:1rem;}}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<nav>
+  <div class="nav-logo">P &amp; R ◈</div>
+  <ul class="nav-links">
+    <li><a href="#profiles">Us</a></li>
+    <li><a href="#funded">Funded</a></li>
+    <li><a href="#gold">Gold</a></li>
+    <li><a href="#goals">Goals</a></li>
+  </ul>
+</nav>
+
+<div class="ticker-wrap">
+  <div class="ticker-tape">
+    <span class="ti"><span>XAUUSD</span>$2,340 ▲1.2%</span>
+    <span class="ti"><span>XAGUSD</span>$28.40 ▲0.8%</span>
+    <span class="ti"><span>FUNDED ✓</span>PRAMEESH CLEARED</span>
+    <span class="ti"><span>FUNDED ✓</span>RAGHUL CLEARED</span>
+    <span class="ti"><span>GLD ETF</span>$215.70 ▲0.9%</span>
+    <span class="ti"><span>GOLD MCX</span>₹71,200 ▲1.4%</span>
+    <span class="ti dn"><span>DXY</span>104.2 ▼0.3%</span>
+    <span class="ti"><span>BTC</span>$67,240 ▲2.1%</span>
+    <span class="ti"><span>XAUUSD</span>$2,340 ▲1.2%</span>
+    <span class="ti"><span>XAGUSD</span>$28.40 ▲0.8%</span>
+    <span class="ti"><span>FUNDED ✓</span>PRAMEESH CLEARED</span>
+    <span class="ti"><span>FUNDED ✓</span>RAGHUL CLEARED</span>
+    <span class="ti"><span>GLD ETF</span>$215.70 ▲0.9%</span>
+    <span class="ti"><span>GOLD MCX</span>₹71,200 ▲1.4%</span>
+    <span class="ti dn"><span>DXY</span>104.2 ▼0.3%</span>
+    <span class="ti"><span>BTC</span>$67,240 ▲2.1%</span>
+  </div>
+</div>
+
+<section class="hero" id="hero">
+  <div class="glow g1"></div>
+  <div class="glow g2"></div>
+  <div>
+    <div class="hero-badge">🏆 &nbsp; 1 Year Strong · Funded · Unstoppable</div>
+    <h1 class="hero-title">
+      <span class="name-p">Prameesh</span>
+      <span class="hero-amp">&amp;</span>
+      <span class="name-r">Raghul</span>
+    </h1>
+    <p class="hero-sub">One year. Two traders. Funded accounts cleared, gold markets conquered — best friends building generational wealth together.</p>
+    <div class="hero-ctas">
+      <a href="#funded" class="btn-gold">Our Funded Accounts</a>
+      <a href="#gold" class="btn-ghost">Gold Trades ↗</a>
+    </div>
+  </div>
+</section>
+
+<div class="oneyear-banner">
+  <div class="oy-icon">🥂</div>
+  <div class="oy-text"><h3>1 YEAR ANNIVERSARY</h3><p>Started together · Grinded together · Won together</p></div>
+  <div class="oy-divider"></div>
+  <div class="oy-icon">🏅</div>
+  <div class="oy-text"><h3>FUNDED &amp; CLEARED</h3><p>Both accounts passed · Challenges conquered</p></div>
+  <div class="oy-divider"></div>
+  <div class="oy-icon">🥇</div>
+  <div class="oy-text"><h3>GOLD SPECIALISTS</h3><p>XAU/USD · MCX Gold · GLD ETF</p></div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-num">2</div><div class="stat-label">Funded Accounts Cleared</div></div>
+  <div class="stat-item"><div class="stat-num">1 YR</div><div class="stat-label">Trading Together</div></div>
+  <div class="stat-item"><div class="stat-num">Gold</div><div class="stat-label">Primary Market</div></div>
+  <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Best Friends</div></div>
+</div>
+
+<section id="profiles">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Who We Are</div>
+      <h2 class="section-title">Two Traders.<br>One Mission.</h2>
+      <p class="section-sub">Different styles, same hunger. We push each other every single day in the markets and in life.</p>
+    </div>
+    <div class="profiles-grid reveal">
+      <div class="profile-card prameesh">
+        <div class="pc-glow"></div>
+        <div class="profile-initial">P</div>
+        <div class="profile-role">Trader · Gold Specialist</div>
+        <div class="profile-name">Prameesh</div>
+        <p class="profile-bio">Precision trader with a sharp eye for XAU/USD setups. Cleared his funded account challenge through disciplined risk management and calculated execution. Never chases — always waits for the perfect entry.</p>
+        <div class="profile-tags">
+          <span class="tag">XAU/USD</span>
+          <span class="tag">Funded Trader</span>
+          <span class="tag">Gold Stocks</span>
+          <span class="tag">Risk Mgmt</span>
+          <span class="tag">Technical Analysis</span>
+        </div>
+      </div>
+      <div class="profile-card raghul">
+        <div class="pc-glow"></div>
+        <div class="profile-initial">R</div>
+        <div class="profile-role">Trader · Market Tactician</div>
+        <div class="profile-name">Raghul</div>
+        <p class="profile-bio">Aggressive yet disciplined — Raghul reads market structure like a map. Cleared his funded challenge and consistently delivers on gold trades with a momentum-first approach backed by smart money concepts.</p>
+        <div class="profile-tags">
+          <span class="tag">XAU/USD</span>
+          <span class="tag">Funded Trader</span>
+          <span class="tag">SMC</span>
+          <span class="tag">Momentum</span>
+          <span class="tag">MCX Gold</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="funded" class="funded-section">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Achievement Unlocked</div>
+      <h2 class="section-title">Funded Accounts<br>Cleared ✓</h2>
+      <p class="section-sub">Both challenges passed. Both accounts funded. No shortcuts — just pure discipline and patience in the markets.</p>
+    </div>
+    <div class="funded-grid reveal">
+      <div class="funded-card">
+        <div class="fc-firm">FTMO</div>
+        <div class="fc-name">Challenge Phase</div>
+        <div class="fc-amount">$100K</div>
+        <div class="fc-who">Cleared by <span>Prameesh</span></div>
+        <div class="fc-bar"><div class="fc-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="funded-card">
+        <div class="fc-firm">The 5%ers</div>
+        <div class="fc-name">Growth Program</div>
+        <div class="fc-amount">$50K</div>
+        <div class="fc-who">Cleared by <span>Raghul</span></div>
+        <div class="fc-bar"><div class="fc-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="funded-card">
+        <div class="fc-firm">MyFundedFX</div>
+        <div class="fc-name">Standard Account</div>
+        <div class="fc-amount">$200K</div>
+        <div class="fc-who">Cleared by <span>Prameesh</span></div>
+        <div class="fc-bar"><div class="fc-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="funded-card">
+        <div class="fc-firm">Apex Trader</div>
+        <div class="fc-name">Evaluation Pass</div>
+        <div class="fc-amount">$150K</div>
+        <div class="fc-who">Cleared by <span>Raghul</span></div>
+        <div class="fc-bar"><div class="fc-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="funded-card">
+        <div class="fc-firm">Funded Engineer</div>
+        <div class="fc-name">Combined Duo Pass</div>
+        <div class="fc-amount">$500K</div>
+        <div class="fc-who">Cleared by <span>Prameesh &amp; Raghul</span></div>
+        <div class="fc-bar"><div class="fc-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="funded-card" style="border-color:rgba(245,200,66,0.3);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:180px;">
+        <div style="font-size:2.5rem;margin-bottom:.5rem;">🚀</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:.08em;color:var(--gold);">Next Target</div>
+        <div style="color:var(--t2);font-size:.82rem;margin-top:.3rem;">$1M Funded Pool · 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="gold" class="gold-section">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">Our Market</div>
+      <h2 class="section-title">Gold Is Our<br>Language 🥇</h2>
+      <p class="section-sub">XAU/USD is where we made our mark. Two traders who understand gold better than any other instrument.</p>
+    </div>
+    <div class="gold-layout reveal">
+      <div>
+        <div class="gold-card-main">
+          <div class="gc-header">
+            <div class="gc-left">
+              <div class="ticker">XAU / USD</div>
+              <div class="name">Spot Gold</div>
+            </div>
+            <div style="text-align:right;">
+              <div class="gc-price">$2,340</div>
+              <div class="gc-change">▲ +1.24% TODAY</div>
+            </div>
+          </div>
+          <svg class="sparkline-big" viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="gg" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#f5c842" stop-opacity=".25"/>
+                <stop offset="100%" stop-color="#f5c842" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <polyline points="0,70 30,65 55,68 80,50 105,55 130,38 155,42 180,28 205,32 230,20 260,24 290,12 320,8" fill="none" stroke="#f5c842" stroke-width="2.5" stroke-linejoin="round"/>
+            <polyline points="0,70 30,65 55,68 80,50 105,55 130,38 155,42 180,28 205,32 230,20 260,24 290,12 320,8 320,80 0,80" fill="url(#gg)"/>
+          </svg>
+          <div class="gold-stats">
+            <div class="gs-item"><div class="gs-label">52W High</div><div class="gs-val">$2,431</div></div>
+            <div class="gs-item"><div class="gs-label">52W Low</div><div class="gs-val">$1,810</div></div>
+            <div class="gs-item"><div class="gs-label">YTD Return</div><div class="gs-val">+18.4%</div></div>
+            <div class="gs-item"><div class="gs-label">Our Win Rate</div><div class="gs-val">74%</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="gold-side">
+        <div class="gold-mini">
+          <div class="gm-icon">🥇</div>
+          <div><div class="gm-label">MCX Gold</div><div class="gm-name">Gold (India)</div><div class="gm-price up">₹71,200 / 10g</div></div>
+          <div class="gm-chg up">▲ +1.4%</div>
+        </div>
+        <div class="gold-mini">
+          <div class="gm-icon">📈</div>
+          <div><div class="gm-label">NYSE: GLD</div><div class="gm-name">SPDR Gold ETF</div><div class="gm-price up">$215.70</div></div>
+          <div class="gm-chg up">▲ +0.9%</div>
+        </div>
+        <div class="gold-mini">
+          <div class="gm-icon">⛏️</div>
+          <div><div class="gm-label">NYSE: NEM</div><div class="gm-name">Newmont Corp</div><div class="gm-price up">$42.80</div></div>
+          <div class="gm-chg up">▲ +2.1%</div>
+        </div>
+        <div class="gold-mini">
+          <div class="gm-icon">🪙</div>
+          <div><div class="gm-label">NYSE: GOLD</div><div class="gm-name">Barrick Gold</div><div class="gm-price up">$18.60</div></div>
+          <div class="gm-chg up">▲ +1.7%</div>
+        </div>
+        <div class="gold-mini">
+          <div class="gm-icon">🔮</div>
+          <div><div class="gm-label">COMEX</div><div class="gm-name">Gold Futures</div><div class="gm-price up">$2,355</div></div>
+          <div class="gm-chg up">▲ +1.1%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="goals" class="goals-section">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-tag">The Roadmap</div>
+      <h2 class="section-title">Goals &amp;<br>Milestones</h2>
+      <p class="section-sub">We set goals publicly and chase them ruthlessly. One year down — the best is yet to come.</p>
+    </div>
+    <div class="goals-layout reveal">
+      <div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.1em;margin-bottom:1.8rem;color:var(--t2);">PROGRESS TRACKER</h3>
+        <div class="goal-track">
+          <div class="goal-header"><span class="goal-lbl">Funded Pool — $1M Total</span><span class="goal-pct">50%</span></div>
+          <div class="goal-bar-bg"><div class="goal-bar-fill" data-width="50%"></div></div>
+          <div class="goal-meta">$500K cleared · Target: Dec 2026</div>
+        </div>
+        <div class="goal-track">
+          <div class="goal-header"><span class="goal-lbl">Gold Win Rate — 80%</span><span class="goal-pct" style="color:var(--green)">74%</span></div>
+          <div class="goal-bar-bg"><div class="goal-bar-fill g2" data-width="74%"></div></div>
+          <div class="goal-meta">Current: 74% · Almost there</div>
+        </div>
+        <div class="goal-track">
+          <div class="goal-header"><span class="goal-lbl">Community — 10K Traders</span><span class="goal-pct" style="color:#ff8c00">30%</span></div>
+          <div class="goal-bar-bg"><div class="goal-bar-fill g3" data-width="30%"></div></div>
+          <div class="goal-meta">3,000 members · Target: 2026</div>
+        </div>
+        <div class="goal-track">
+          <div class="goal-header"><span class="goal-lbl">Consistency — 2 Years Funded</span><span class="goal-pct">50%</span></div>
+          <div class="goal-bar-bg"><div class="goal-bar-fill" data-width="50%"></div></div>
+          <div class="goal-meta">Year 1 done · Year 2 in progress</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:.1em;margin-bottom:1.8rem;color:var(--t2);">MILESTONE TIMELINE</h3>
+        <div class="timeline">
+          <div class="tl-item done">
+            <div class="tl-icon">🏆</div>
+            <div><div class="tl-title">First Funded Account Cleared</div><div class="tl-date">2024 · Both passed challenge</div></div>
+            <span class="tl-badge">Done</span>
+          </div>
+          <div class="tl-item done">
+            <div class="tl-icon">🥇</div>
+            <div><div class="tl-title">Gold Trading System Built</div><div class="tl-date">2024 · XAU/USD strategy locked in</div></div>
+            <span class="tl-badge">Done</span>
+          </div>
+          <div class="tl-item done">
+            <div class="tl-icon">👬</div>
+            <div><div class="tl-title">1 Year Together</div><div class="tl-date">2025 · 365 days of grinding</div></div>
+            <span class="tl-badge">Done</span>
+          </div>
+          <div class="tl-item prog">
+            <div class="tl-icon">⚡</div>
+            <div><div class="tl-title">Multiple Funded Accounts Active</div><div class="tl-date">2025–2026 · Scale up phase</div></div>
+            <span class="tl-badge">In Progress</span>
+          </div>
+          <div class="tl-item soon">
+            <div class="tl-icon">🔮</div>
+            <div><div class="tl-title">Launch Duo Trading Community</div><div class="tl-date">2026 · Teach what we know</div></div>
+            <span class="tl-badge">Upcoming</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="friend-section">
+  <div class="container">
+    <div class="friend-inner reveal">
+      <div class="section-tag">The Bond</div>
+      <h2 class="section-title">Brothers In<br>The Market</h2>
+      <p class="section-sub" style="margin:0 auto;">Not just trading partners — best friends who found their edge together and refuse to stop until they've built everything they dreamed of.</p>
+      <div class="friend-pair">
+        <div class="fp-av p">P</div>
+        <div class="fp-link">🤝</div>
+        <div class="fp-av r">R</div>
+      </div>
+    </div>
+    <div class="friend-cards reveal">
+      <div class="fr-card"><div class="fr-icon">📊</div><div class="fr-title">Daily Trade Reviews</div><div class="fr-desc">Every trade analyzed together — wins and losses. No ego, just growth. That's how both cleared their funded challenges.</div></div>
+      <div class="fr-card"><div class="fr-icon">🎯</div><div class="fr-title">Accountability First</div><div class="fr-desc">Weekly goal check-ins, shared watchlists, and brutal honesty. Best friends keep each other honest in the markets.</div></div>
+      <div class="fr-card"><div class="fr-icon">🧠</div><div class="fr-title">Two Minds, One Edge</div><div class="fr-desc">Prameesh spots precision entries. Raghul reads macro structure. Together they see what neither sees alone.</div></div>
+      <div class="fr-card"><div class="fr-icon">🌅</div><div class="fr-title">Built for the Long Game</div><div class="fr-desc">One year is just the beginning. The real journey — generational wealth, full-time trading, and a community of winners.</div></div>
+    </div>
+    <div style="text-align:center;margin-top:3rem;" class="reveal">
+      <a href="mailto:hello@prameeshraghul.com" class="btn-gold" style="font-size:1rem;padding:1rem 2.8rem;">Connect With Us ↗</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="f-logo">PRAMEESH &amp; RAGHUL</div>
+  <div class="f-names">Funded Traders · Gold Specialists · Best Friends · 1 Year Strong</div>
+  <div class="social-links">
+    <a class="sl" href="#">𝕏</a>
+    <a class="sl" href="#">▶</a>
+    <a class="sl" href="#">📸</a>
+    <a class="sl" href="#">in</a>
+  </div>
+  <div class="f-copy">© 2026 Prameesh &amp; Raghul · Built different. Trade different.</div>
+</footer>
+
+<script>
+// Custom cursor
+const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+(function anim(){
+  rx+=(mx-rx)*.13;ry+=(my-ry)*.13;
+  cur.style.transform=`translate(${mx-4}px,${my-4}px)`;
+  ring.style.transform=`translate(${rx-16}px,${ry-16}px)`;
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{ring.style.width='50px';ring.style.height='50px';});
+  el.addEventListener('mouseleave',()=>{ring.style.width='32px';ring.style.height='32px';});
+});
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Animate goal bars
+document.querySelectorAll('.goal-bar-fill').forEach(bar=>{
+  const target=bar.getAttribute('data-width')||bar.style.width;
+  bar.style.width='0%';
+  const bobs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        setTimeout(()=>bar.style.width=target,150);
+        bobs.unobserve(e.target);
+      }
+    });
+  },{threshold:.3});
+  bobs.observe(bar);
+});
+</script>
+</body>
+</html>
