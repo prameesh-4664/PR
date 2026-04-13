@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Prameesh & Raghul — Funded Traders · Gold Specialists</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+/* ============================================================
+   UI UX PRO MAX — CYBERPUNK + ACETERNITY + MAGIC UI PATTERNS
+   Design System: HUD/Sci-Fi FUI × Funded Trading Portfolio
+   Primary: #FFD700  Accent: #00FF9D  Dark: #020408
+   Fonts: Bebas Neue (display) · Outfit (body) · Space Mono (data)
+   ============================================================ */
+:root {
+  --gold: #FFD700; --gold2: #FFA500; --gold3: #FFEC6E; --gold-glow: rgba(255,215,0,0.15);
+  --green: #00FF9D; --green-glow: rgba(0,255,157,0.12); --blue: #00D4FF;
+  --bg: #020408; --bg2: #060C14; --bg3: #0A1220; --bg4: #0E1828; --bg5: #121E30;
+  --t1: #F0F6FF; --t2: #8899AA; --t3: #3D5068;
+  --border: rgba(255,215,0,0.08); --border2: rgba(255,215,0,0.22); --border3: rgba(255,215,0,0.45);
+  --radius: 20px; --radius-sm: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--t1); overflow-x: hidden; cursor: none; }
+
+/* ── CURSOR ── */
+#cursor-dot { width: 4px; height: 4px; background: var(--gold); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9999; transform: translate(-50%,-50%); box-shadow: 0 0 8px var(--gold); transition: transform .1s; }
+#cursor-ring { width: 32px; height: 32px; border: 1px solid rgba(255,215,0,0.55); border-radius: 50%; position: fixed; pointer-events: none; z-index: 9998; transform: translate(-50%,-50%); transition: width .25s, height .25s, border-color .2s; }
+body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring { width: 48px; height: 48px; border-color: var(--gold); }
+
+/* ── CANVAS ── */
+#starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+/* ── GRID BG (21st.dev pattern) ── */
+.grid-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,215,0,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,215,0,0.025) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 40%, transparent 100%); }
+
+/* ── NAV ── */
+nav { position: fixed; top: 0; left: 0; right: 0; z-index: 500; display: flex; justify-content: space-between; align-items: center; padding: 1rem 3rem; background: rgba(2,4,8,0.7); backdrop-filter: blur(24px) saturate(180%); border-bottom: 1px solid var(--border); }
+.logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: .25em; background: linear-gradient(135deg, var(--gold), var(--gold3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { font-family: 'Space Mono', monospace; font-size: .65rem; letter-spacing: .18em; text-transform: uppercase; color: var(--t2); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--gold); }
+.nav-cta { background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #020408; font-family: 'Space Mono', monospace; font-size: .65rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; padding: .5rem 1.4rem; border-radius: 100px; text-decoration: none; transition: box-shadow .3s, transform .2s; }
+.nav-cta:hover { box-shadow: 0 0 28px rgba(255,215,0,0.5); transform: translateY(-1px); }
+
+/* ── TICKER ── */
+.ticker { position: relative; z-index: 10; margin-top: 62px; overflow: hidden; padding: .5rem 0; background: rgba(255,215,0,0.03); border-bottom: 1px solid var(--border); }
+.ticker-track { display: flex; gap: 3rem; animation: ticker-anim 30s linear infinite; white-space: nowrap; width: max-content; }
+@keyframes ticker-anim { to { transform: translateX(-50%); } }
+.ti { font-family: 'Space Mono', monospace; font-size: .65rem; color: var(--gold); letter-spacing: .06em; }
+.ti .lbl { color: var(--t3); margin-right: .35rem; }
+.ti.clr { color: var(--green); }
+.ti.dn { color: #FF5566; }
+
+/* ── HERO ── */
+.hero { position: relative; min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 5rem 2rem 4rem; overflow: hidden; z-index: 1; }
+/* Orbital rings (Aceternity-inspired) */
+.orb-container { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.orb { position: absolute; border-radius: 50%; border: 1px solid; animation: orbit linear infinite; }
+.orb:nth-child(1) { width: 520px; height: 520px; border-color: rgba(255,215,0,0.07); animation-duration: 35s; }
+.orb:nth-child(2) { width: 780px; height: 780px; border-color: rgba(255,215,0,0.045); animation-duration: 55s; animation-direction: reverse; }
+.orb:nth-child(3) { width: 1060px; height: 1060px; border-color: rgba(255,215,0,0.025); animation-duration: 75s; }
+.orb:nth-child(4) { width: 1340px; height: 1340px; border-color: rgba(255,215,0,0.015); animation-duration: 95s; animation-direction: reverse; }
+@keyframes orbit { to { transform: rotate(360deg); } }
+/* Scanlines */
+.scanlines { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,255,157,0.006) 4px); pointer-events: none; }
+/* Center aura */
+.hero-aura { position: absolute; width: 800px; height: 800px; border-radius: 50%; background: radial-gradient(circle, rgba(255,215,0,0.05) 0%, transparent 65%); pointer-events: none; animation: aura-pulse 6s ease-in-out infinite; }
+@keyframes aura-pulse { 0%,100% { transform: scale(1); opacity: .7; } 50% { transform: scale(1.1); opacity: 1; } }
+
+.hero-content { position: relative; z-index: 2; }
+
+/* Aceternity pill badge */
+.pill-badge { display: inline-flex; align-items: center; gap: .6rem; border: 1px solid rgba(255,215,0,0.28); background: rgba(255,215,0,0.05); color: var(--gold); font-family: 'Space Mono', monospace; font-size: .62rem; letter-spacing: .22em; text-transform: uppercase; padding: .42rem 1.3rem; border-radius: 100px; margin-bottom: 2.5rem; animation: reveal .8s ease both; backdrop-filter: blur(8px); }
+.live-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; box-shadow: 0 0 8px var(--green); animation: blink-dot 1.5s ease-in-out infinite; }
+@keyframes blink-dot { 0%,100% { opacity: 1; } 50% { opacity: .2; } }
+
+/* Giant name title */
+.hero-name { font-family: 'Bebas Neue', sans-serif; font-size: clamp(4.5rem, 13vw, 12rem); line-height: .86; letter-spacing: .02em; animation: reveal .85s .1s ease both; }
+.name-gold { display: block; background: linear-gradient(160deg, #FFD700 0%, #FFEC6E 40%, #FFA500 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 55px rgba(255,215,0,0.3)); }
+.name-divider { display: block; font-size: .18em; color: rgba(255,255,255,0.1); letter-spacing: .55em; margin: .15em 0; font-family: 'Outfit', sans-serif; font-weight: 200; }
+.name-white { display: block; color: rgba(255,255,255,0.9); }
+
+.hero-sub { font-size: 1.05rem; color: var(--t2); max-width: 560px; margin: 2rem auto 3rem; line-height: 1.85; animation: reveal .85s .22s ease both; }
+.hero-sub strong { color: var(--gold); font-weight: 600; }
+
+/* Magnetic buttons (21st.dev style) */
+.btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; animation: reveal .85s .36s ease both; }
+.btn-primary { position: relative; padding: .95rem 2.8rem; background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #020408; font-family: 'Outfit', sans-serif; font-weight: 800; font-size: .88rem; letter-spacing: .1em; text-transform: uppercase; border-radius: 100px; text-decoration: none; overflow: hidden; display: inline-block; transition: transform .2s, box-shadow .3s; }
+.btn-primary::before { content: ''; position: absolute; top: -50%; left: -60%; width: 35%; height: 200%; background: rgba(255,255,255,0.22); transform: skewX(-20deg); animation: btn-sheen 3.5s ease-in-out infinite; }
+@keyframes btn-sheen { 0%,65% { left: -60%; } 100% { left: 145%; } }
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 0 50px rgba(255,215,0,0.5), 0 20px 40px rgba(0,0,0,0.4); }
+.btn-outline { padding: .95rem 2.8rem; border: 1px solid rgba(255,255,255,0.14); color: var(--t1); font-family: 'Outfit', sans-serif; font-weight: 500; font-size: .88rem; letter-spacing: .1em; text-transform: uppercase; border-radius: 100px; text-decoration: none; display: inline-block; backdrop-filter: blur(12px); background: rgba(255,255,255,0.03); transition: all .3s; }
+.btn-outline:hover { border-color: rgba(255,215,0,0.5); color: var(--gold); transform: translateY(-3px); }
+
+/* Scroll indicator */
+.scroll-indicator { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .5rem; animation: reveal .85s .5s ease both; }
+.scroll-bar { width: 1px; height: 52px; background: linear-gradient(to bottom, var(--gold), transparent); animation: scroll-drop 2s ease-in-out infinite; }
+@keyframes scroll-drop { 0% { transform: scaleY(0); transform-origin: top; } 50% { transform: scaleY(1); transform-origin: top; } 51% { transform-origin: bottom; } 100% { transform: scaleY(0); transform-origin: bottom; } }
+.scroll-lbl { font-family: 'Space Mono', monospace; font-size: .5rem; letter-spacing: .25em; color: var(--t3); text-transform: uppercase; }
+
+@keyframes reveal { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+
+/* ── ANNIVERSARY BAND ── */
+.ann-band { position: relative; z-index: 10; display: grid; grid-template-columns: repeat(3, 1fr); background: rgba(255,215,0,0.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.ann-cell { padding: 2rem 1.5rem; text-align: center; border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: .55rem; transition: background .3s; }
+.ann-cell:last-child { border-right: none; }
+.ann-cell:hover { background: rgba(255,215,0,0.04); }
+.ann-ico { width: 48px; height: 48px; border-radius: 14px; background: rgba(255,215,0,0.07); border: 1px solid rgba(255,215,0,0.18); display: flex; align-items: center; justify-content: center; transition: box-shadow .3s; }
+.ann-cell:hover .ann-ico { box-shadow: 0 0 22px rgba(255,215,0,0.22); }
+.ann-ico svg { width: 20px; height: 20px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+.ann-lbl { font-family: 'Space Mono', monospace; font-size: .58rem; letter-spacing: .2em; color: var(--t3); text-transform: uppercase; }
+.ann-val { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: .1em; color: var(--gold); }
+
+/* ── STATS BAR ── */
+.stats-bar { position: relative; z-index: 10; display: grid; grid-template-columns: repeat(4,1fr); background: var(--bg2); border-bottom: 1px solid var(--border); }
+.stat-cell { padding: 2.5rem 1rem; text-align: center; border-right: 1px solid var(--border); }
+.stat-cell:last-child { border-right: none; }
+.stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; letter-spacing: .04em; line-height: 1; background: linear-gradient(135deg, var(--gold), var(--gold3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-l { font-family: 'Space Mono', monospace; font-size: .56rem; letter-spacing: .2em; color: var(--t3); text-transform: uppercase; margin-top: .45rem; }
+
+/* ── SECTIONS ── */
+section { position: relative; z-index: 10; padding: 8rem 2rem; }
+.container { max-width: 1200px; margin: 0 auto; }
+.sec-eyebrow { display: inline-flex; align-items: center; gap: .65rem; font-family: 'Space Mono', monospace; font-size: .6rem; letter-spacing: .28em; color: var(--gold); text-transform: uppercase; margin-bottom: 1.2rem; }
+.sec-eyebrow::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+.sec-h { font-family: 'Bebas Neue', sans-serif; font-size: clamp(3rem, 6vw, 5.5rem); line-height: .9; letter-spacing: .03em; margin-bottom: 1.2rem; }
+.sec-sub { color: var(--t2); font-size: .95rem; line-height: 1.85; max-width: 520px; }
+
+/* ── PROFILE CARDS (Aceternity Spotlight Card) ── */
+.profiles-bg { background: var(--bg); }
+.profiles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 5rem; }
+@media(max-width:720px) { .profiles-grid { grid-template-columns: 1fr; } }
+
+.profile-card { position: relative; background: var(--bg3); border-radius: var(--radius); padding: 3rem; overflow: hidden; border: 1px solid var(--border); transition: transform .45s cubic-bezier(.23,1,.32,1), border-color .4s; cursor: default; }
+/* Spotlight hover (Aceternity pattern) */
+.profile-card::before { content: ''; position: absolute; inset: 0; border-radius: inherit; opacity: 0; transition: opacity .5s; background: radial-gradient(600px circle at var(--mx,50%) var(--my,50%), rgba(255,215,0,0.06), transparent 40%); pointer-events: none; z-index: 0; }
+.profile-card:hover::before { opacity: 1; }
+/* Top shimmer line */
+.profile-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0; transition: opacity .4s; }
+.profile-card:hover::after { opacity: 1; }
+.profile-card:hover { transform: translateY(-12px); border-color: rgba(255,215,0,0.28); }
+.profile-card.amber:hover { border-color: rgba(255,140,0,0.28); }
+.profile-card.amber::after { background: linear-gradient(90deg, transparent, #FF8C00, transparent); }
+
+/* Corner bracket decoration */
+.bracket { position: absolute; width: 18px; height: 18px; border-color: rgba(255,215,0,0.25); border-style: solid; }
+.bracket.tl { top: 16px; left: 16px; border-width: 1px 0 0 1px; }
+.bracket.br { bottom: 16px; right: 16px; border-width: 0 1px 1px 0; }
+.profile-card.amber .bracket { border-color: rgba(255,140,0,0.25); }
+
+.p-inner { position: relative; z-index: 1; }
+.p-avatar { width: 78px; height: 78px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 2.3rem; margin-bottom: 2rem; }
+.profile-card:not(.amber) .p-avatar { background: rgba(255,215,0,0.07); border: 1px solid rgba(255,215,0,0.2); color: var(--gold); }
+.profile-card.amber .p-avatar { background: rgba(255,140,0,0.07); border: 1px solid rgba(255,140,0,0.2); color: #FF8C00; }
+.p-role { font-family: 'Space Mono', monospace; font-size: .58rem; letter-spacing: .2em; text-transform: uppercase; margin-bottom: .45rem; }
+.profile-card:not(.amber) .p-role { color: var(--gold); }
+.profile-card.amber .p-role { color: #FF8C00; }
+.p-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: .06em; line-height: 1; margin-bottom: .9rem; }
+.p-bio { color: var(--t2); font-size: .9rem; line-height: 1.85; margin-bottom: 2rem; }
+.p-tags { display: flex; flex-wrap: wrap; gap: .4rem; }
+.p-tag { font-family: 'Space Mono', monospace; font-size: .56rem; padding: .28rem .8rem; border-radius: 100px; letter-spacing: .08em; }
+.profile-card:not(.amber) .p-tag { background: rgba(255,215,0,0.05); color: rgba(255,215,0,0.75); border: 1px solid rgba(255,215,0,0.12); }
+.profile-card.amber .p-tag { background: rgba(255,140,0,0.05); color: rgba(255,140,0,0.75); border: 1px solid rgba(255,140,0,0.12); }
+.p-divider { height: 1px; background: var(--border); margin: 2rem 0; }
+.p-stats { display: flex; gap: 0; }
+.p-stat { flex: 1; text-align: center; border-right: 1px solid var(--border); padding: 0 .5rem; }
+.p-stat:last-child { border-right: none; }
+.p-stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: .05em; color: var(--gold); }
+.profile-card.amber .p-stat-n { color: #FF8C00; }
+.p-stat-l { font-family: 'Space Mono', monospace; font-size: .5rem; letter-spacing: .15em; color: var(--t3); text-transform: uppercase; margin-top: .15rem; }
+
+/* ── FUNDED (Bento Grid) ── */
+.funded-bg { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%); }
+/* Bento grid (21st.dev / Magic UI bento layout) */
+.bento-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: auto; gap: 1.2rem; margin-top: 5rem; }
+@media(max-width:900px) { .bento-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:520px) { .bento-grid { grid-template-columns: 1fr; } }
+
+.bento-card { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; position: relative; overflow: hidden; transition: transform .4s cubic-bezier(.23,1,.32,1), border-color .3s; }
+.bento-card:hover { transform: translateY(-7px); border-color: rgba(0,255,157,0.3); }
+/* Cleared badge */
+.bento-card::after { content: 'CLEARED ✓'; position: absolute; top: 1rem; right: 1rem; font-family: 'Space Mono', monospace; font-size: .52rem; letter-spacing: .14em; padding: .22rem .65rem; border-radius: 100px; background: rgba(0,255,157,0.06); color: var(--green); border: 1px solid rgba(0,255,157,0.18); }
+/* Glow sweep on hover */
+.bento-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(0,255,157,0.05), transparent 60%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.bento-card:hover::before { opacity: 1; }
+.bc-firm { font-family: 'Space Mono', monospace; font-size: .56rem; letter-spacing: .18em; color: var(--t3); text-transform: uppercase; margin-bottom: .38rem; }
+.bc-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: .08em; color: var(--t1); margin-bottom: .28rem; }
+.bc-amount { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: .04em; background: linear-gradient(135deg, var(--green), #00D4FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.05; }
+.bc-by { font-family: 'Space Mono', monospace; font-size: .6rem; color: var(--t2); margin-top: .38rem; }
+.bc-by strong { color: var(--gold); }
+.bc-bar { margin-top: 1.5rem; height: 2px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+.bc-bar-fill { height: 100%; width: 100%; background: linear-gradient(90deg, var(--green), #00D4FF); border-radius: 2px; }
+/* Featured wide card */
+.bento-card.wide { grid-column: span 2; }
+@media(max-width:900px) { .bento-card.wide { grid-column: span 1; } }
+/* Next target card */
+.bento-next { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 200px; background: rgba(255,215,0,0.02); border-color: rgba(255,215,0,0.12); }
+.bento-next::after { display: none; }
+.bento-next::before { background: radial-gradient(circle at 50% 50%, rgba(255,215,0,0.04), transparent 60%); }
+.bento-next:hover { border-color: rgba(255,215,0,0.38); }
+.bento-next svg { width: 32px; height: 32px; stroke: var(--gold); fill: none; stroke-width: 1.2; margin-bottom: .85rem; opacity: .6; }
+.bento-next-h { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: .1em; color: var(--gold); }
+.bento-next-s { font-family: 'Space Mono', monospace; font-size: .58rem; color: var(--t3); letter-spacing: .1em; margin-top: .35rem; }
+
+/* ── GOLD SECTION ── */
+.gold-bg { background: var(--bg2); }
+.gold-layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 2rem; margin-top: 5rem; }
+@media(max-width:900px) { .gold-layout { grid-template-columns: 1fr; } }
+
+/* Main gold card with glow border (Magic UI) */
+.gold-main-card { position: relative; background: var(--bg3); border-radius: var(--radius); padding: 2.5rem; overflow: hidden; transition: border-color .3s; }
+/* Animated glow border */
+.gold-main-card-border { position: absolute; inset: 0; border-radius: var(--radius); padding: 1px; background: conic-gradient(from var(--angle,0deg), transparent 50%, rgba(255,215,0,0.5), transparent 70%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: border-spin 4s linear infinite; pointer-events: none; }
+@keyframes border-spin { to { --angle: 360deg; } }
+@property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+.gmc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
+.gmc-lbl { font-family: 'Space Mono', monospace; font-size: .58rem; letter-spacing: .18em; color: var(--t3); text-transform: uppercase; }
+.gmc-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: .08em; margin-top: .3rem; }
+.gmc-price { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; letter-spacing: .03em; color: var(--gold); text-align: right; line-height: 1; filter: drop-shadow(0 0 18px rgba(255,215,0,0.28)); }
+.gmc-chg { font-family: 'Space Mono', monospace; font-size: .68rem; color: var(--green); text-align: right; margin-top: .28rem; }
+.gmc-chart { width: 100%; height: 88px; overflow: visible; }
+.gmc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: 1.5rem; }
+.gmc-stat { background: rgba(255,255,255,0.025); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: .85rem 1rem; }
+.gmc-stat-l { font-family: 'Space Mono', monospace; font-size: .52rem; letter-spacing: .14em; color: var(--t3); text-transform: uppercase; margin-bottom: .32rem; }
+.gmc-stat-v { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; letter-spacing: .06em; color: var(--gold); }
+
+/* Gold list (hover slide-right) */
+.gold-list { display: flex; flex-direction: column; gap: 1rem; }
+.gold-row { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 1.3rem 1.4rem; display: flex; align-items: center; gap: 1.1rem; transition: all .35s cubic-bezier(.23,1,.32,1); }
+.gold-row:hover { border-color: rgba(255,215,0,0.3); transform: translateX(8px); background: rgba(255,215,0,0.025); }
+.gr-ico { width: 42px; height: 42px; border-radius: 12px; background: rgba(255,215,0,0.05); border: 1px solid rgba(255,215,0,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: box-shadow .3s; }
+.gold-row:hover .gr-ico { box-shadow: 0 0 16px rgba(255,215,0,0.18); }
+.gr-ico svg { width: 17px; height: 17px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+.gr-lbl { font-family: 'Space Mono', monospace; font-size: .53rem; letter-spacing: .15em; color: var(--t3); text-transform: uppercase; }
+.gr-name { font-size: .9rem; font-weight: 500; color: var(--t1); margin: .18rem 0; }
+.gr-price { font-family: 'Bebas Neue', sans-serif; font-size: 1rem; color: var(--green); }
+.gr-chg { font-family: 'Space Mono', monospace; font-size: .64rem; margin-left: auto; flex-shrink: 0; color: var(--green); }
+.gr-chg.dn { color: #FF5566; }
+
+/* ── GOALS ── */
+.goals-bg { background: var(--bg); }
+.goals-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; margin-top: 5rem; }
+@media(max-width:800px) { .goals-layout { grid-template-columns: 1fr; } }
+.goals-col-lbl { font-family: 'Space Mono', monospace; font-size: .56rem; letter-spacing: .24em; color: var(--t3); text-transform: uppercase; margin-bottom: 2rem; }
+.goal-item { margin-bottom: 2.2rem; }
+.goal-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: .65rem; }
+.goal-name { font-size: .9rem; font-weight: 500; }
+.goal-pct { font-family: 'Space Mono', monospace; font-size: .7rem; color: var(--gold); }
+/* Animated bar */
+.goal-track { height: 3px; background: rgba(255,255,255,0.06); border-radius: 100px; overflow: visible; position: relative; }
+.goal-fill { height: 100%; border-radius: 100px; width: 0; transition: width 2.2s cubic-bezier(.4,0,.2,1); position: relative; }
+.goal-fill.gold { background: linear-gradient(90deg, var(--gold), var(--gold3)); }
+.goal-fill.green { background: linear-gradient(90deg, var(--green), #00D4FF); }
+.goal-fill.amber { background: linear-gradient(90deg, #FF8C00, var(--gold)); }
+/* Glowing dot at end */
+.goal-fill::after { content: ''; position: absolute; right: -1px; top: 50%; transform: translateY(-50%); width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 10px currentColor; background: currentColor; }
+.goal-fill.gold::after { background: var(--gold3); box-shadow: 0 0 10px var(--gold); color: var(--gold3); }
+.goal-fill.green::after { background: #00D4FF; box-shadow: 0 0 10px var(--green); color: #00D4FF; }
+.goal-fill.amber::after { background: var(--gold); box-shadow: 0 0 10px #FF8C00; color: var(--gold); }
+.goal-meta { font-family: 'Space Mono', monospace; font-size: .54rem; color: var(--t3); margin-top: .5rem; letter-spacing: .06em; }
+
+/* Timeline */
+.timeline { display: flex; flex-direction: column; gap: .85rem; }
+.tl-row { background: var(--bg3); border: 1px solid var(--border); border-radius: 16px; padding: 1.05rem 1.3rem; display: flex; align-items: center; gap: .9rem; transition: all .3s; }
+.tl-row:hover { border-color: var(--border2); transform: translateX(5px); }
+.tl-dot { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tl-dot.done { background: rgba(0,255,157,0.08); border: 1px solid rgba(0,255,157,0.2); }
+.tl-dot.prog { background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.2); }
+.tl-dot.soon { background: rgba(255,255,255,0.03); border: 1px solid var(--border); }
+.tl-dot svg { width: 14px; height: 14px; fill: none; stroke-width: 2; }
+.tl-dot.done svg { stroke: var(--green); }
+.tl-dot.prog svg { stroke: var(--gold); }
+.tl-dot.soon svg { stroke: var(--t3); }
+.tl-title { font-size: .88rem; font-weight: 500; margin-bottom: .12rem; }
+.tl-date { font-family: 'Space Mono', monospace; font-size: .56rem; color: var(--t3); letter-spacing: .06em; }
+.tl-badge { margin-left: auto; font-family: 'Space Mono', monospace; font-size: .52rem; padding: .2rem .62rem; border-radius: 100px; font-weight: 700; letter-spacing: .1em; flex-shrink: 0; }
+.tl-badge.done { background: rgba(0,255,157,0.07); color: var(--green); border: 1px solid rgba(0,255,157,0.18); }
+.tl-badge.prog { background: rgba(255,215,0,0.07); color: var(--gold); border: 1px solid rgba(255,215,0,0.18); }
+.tl-badge.soon { background: rgba(255,255,255,0.03); color: var(--t3); border: 1px solid var(--border); }
+
+/* ── BOND ── */
+.bond-bg { background: var(--bg2); text-align: center; }
+.bond-center { max-width: 680px; margin: 0 auto; }
+.avatars { display: flex; align-items: center; justify-content: center; gap: 2.5rem; margin: 3rem 0; }
+.av { width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; position: relative; transition: transform .3s; }
+.av:hover { transform: scale(1.05); }
+.av::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 1px solid; animation: orbit 8s linear infinite; }
+.av.p { background: rgba(255,215,0,0.06); border: 2px solid rgba(255,215,0,0.42); color: var(--gold); }
+.av.p::after { border-color: rgba(255,215,0,0.16); }
+.av.r { background: rgba(255,140,0,0.06); border: 2px solid rgba(255,140,0,0.42); color: #FF8C00; }
+.av.r::after { border-color: rgba(255,140,0,0.16); animation-direction: reverse; }
+.av-sep { font-family: 'Space Mono', monospace; color: rgba(255,215,0,0.28); font-size: 1.2rem; letter-spacing: .25em; }
+/* Bond bento cards */
+.bond-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 3.5rem; text-align: left; }
+@media(max-width:560px) { .bond-cards { grid-template-columns: 1fr; } }
+.bond-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 18px; padding: 1.5rem; transition: all .3s; }
+.bond-card:hover { border-color: var(--border2); transform: translateY(-4px); }
+.bond-ico { width: 38px; height: 38px; border-radius: 10px; background: rgba(255,215,0,0.06); border: 1px solid rgba(255,215,0,0.12); display: flex; align-items: center; justify-content: center; margin-bottom: .85rem; }
+.bond-ico svg { width: 16px; height: 16px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+.bond-title { font-weight: 600; font-size: .94rem; margin-bottom: .38rem; }
+.bond-desc { color: var(--t2); font-size: .82rem; line-height: 1.75; }
+
+/* ── FOOTER ── */
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 4.5rem 2rem; text-align: center; position: relative; z-index: 10; overflow: hidden; }
+footer::before { content: 'P×R'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Bebas Neue', sans-serif; font-size: 18rem; color: rgba(255,215,0,0.012); pointer-events: none; letter-spacing: .08em; white-space: nowrap; }
+.f-logo { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: .22em; background: linear-gradient(135deg, var(--gold), var(--gold3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: .45rem; }
+.f-tagline { font-family: 'Space Mono', monospace; font-size: .58rem; letter-spacing: .25em; color: var(--t3); text-transform: uppercase; margin-bottom: 2.2rem; }
+.f-socials { display: flex; gap: .75rem; justify-content: center; margin-bottom: 2.2rem; }
+.f-social { width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 11px; display: flex; align-items: center; justify-content: center; color: var(--t2); text-decoration: none; font-family: 'Space Mono', monospace; font-size: .68rem; transition: all .3s; }
+.f-social:hover { border-color: var(--gold); color: var(--gold); background: rgba(255,215,0,0.05); box-shadow: 0 0 16px rgba(255,215,0,0.15); }
+.f-copy { font-family: 'Space Mono', monospace; font-size: .54rem; color: var(--t3); letter-spacing: .1em; margin-top: 1.5rem; }
+.f-cta { margin: 1.5rem 0; }
+
+/* ── DIVIDER ── */
+.glow-divider { position: relative; z-index: 10; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,215,0,0.22), transparent); }
+
+/* ── REVEAL ── */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.23,1,.32,1), transform .9s cubic-bezier(.23,1,.32,1); }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal.d1 { transition-delay: .1s; }
+.reveal.d2 { transition-delay: .2s; }
+.reveal.d3 { transition-delay: .3s; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px) {
+  nav { padding: .9rem 1.2rem; }
+  .nav-links { display: none; }
+  .ann-band { grid-template-columns: 1fr; }
+  .stats-bar { grid-template-columns: 1fr 1fr; }
+  .stat-cell:nth-child(2) { border-right: none; }
+  .stat-cell:nth-child(3), .stat-cell:nth-child(4) { border-top: 1px solid var(--border); }
+  .stat-cell:nth-child(4) { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div class="grid-bg"></div>
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ───────── NAV ───────── -->
+<nav>
+  <div class="logo">P × R</div>
+  <ul class="nav-links">
+    <li><a href="#profiles">Traders</a></li>
+    <li><a href="#funded">Funded</a></li>
+    <li><a href="#gold">Gold</a></li>
+    <li><a href="#goals">Goals</a></li>
+    <li><a href="#bond">Story</a></li>
+  </ul>
+  <a href="#bond" class="nav-cta">Connect</a>
+</nav>
+
+<!-- ───────── TICKER ───────── -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ti clr"><span class="lbl">FUNDED</span>PRAMEESH — CLEARED ✓</span>
+    <span class="ti clr"><span class="lbl">FUNDED</span>RAGHUL — CLEARED ✓</span>
+    <span class="ti"><span class="lbl">XAU/USD</span>$2,340.50 +1.24%</span>
+    <span class="ti"><span class="lbl">MCX GOLD</span>₹71,200 +1.4%</span>
+    <span class="ti"><span class="lbl">GLD ETF</span>$215.70 +0.9%</span>
+    <span class="ti dn"><span class="lbl">DXY</span>104.20 −0.3%</span>
+    <span class="ti"><span class="lbl">BARRICK</span>$18.60 +1.7%</span>
+    <span class="ti"><span class="lbl">COMEX</span>$2,355 +1.1%</span>
+    <span class="ti clr"><span class="lbl">1 YEAR</span>TOGETHER & WINNING</span>
+    <span class="ti clr"><span class="lbl">FUNDED</span>PRAMEESH — CLEARED ✓</span>
+    <span class="ti clr"><span class="lbl">FUNDED</span>RAGHUL — CLEARED ✓</span>
+    <span class="ti"><span class="lbl">XAU/USD</span>$2,340.50 +1.24%</span>
+    <span class="ti"><span class="lbl">MCX GOLD</span>₹71,200 +1.4%</span>
+    <span class="ti"><span class="lbl">GLD ETF</span>$215.70 +0.9%</span>
+    <span class="ti dn"><span class="lbl">DXY</span>104.20 −0.3%</span>
+    <span class="ti"><span class="lbl">BARRICK</span>$18.60 +1.7%</span>
+    <span class="ti"><span class="lbl">COMEX</span>$2,355 +1.1%</span>
+    <span class="ti clr"><span class="lbl">1 YEAR</span>TOGETHER & WINNING</span>
+  </div>
+</div>
+
+<!-- ───────── HERO ───────── -->
+<section class="hero" id="hero">
+  <div class="orb-container">
+    <div class="orb"></div><div class="orb"></div>
+    <div class="orb"></div><div class="orb"></div>
+  </div>
+  <div class="scanlines"></div>
+  <div class="hero-aura"></div>
+  <div class="hero-content">
+    <div class="pill-badge"><div class="live-dot"></div>1 Year · Funded · Gold · Unstoppable</div>
+    <div class="hero-name">
+      <span class="name-gold">Prameesh</span>
+      <span class="name-divider">× and ×</span>
+      <span class="name-white">Raghul</span>
+    </div>
+    <p class="hero-sub">Two best friends who turned discipline into <strong>funded accounts</strong>, the gold market into <strong>consistent profits</strong>, and one year of relentless work into a <strong>legacy worth building</strong>.</p>
+    <div class="btn-row">
+      <a href="#funded" class="btn-primary">Our Funded Accounts</a>
+      <a href="#gold" class="btn-outline">Gold Trading</a>
+    </div>
+  </div>
+  <div class="scroll-indicator"><div class="scroll-bar"></div><div class="scroll-lbl">Scroll</div></div>
+</section>
+
+<!-- ───────── ANNIVERSARY BAND ───────── -->
+<div class="ann-band">
+  <div class="ann-cell">
+    <div class="ann-ico"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+    <div class="ann-lbl">Milestone</div><div class="ann-val">1 Year Strong</div>
+  </div>
+  <div class="ann-cell">
+    <div class="ann-ico"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+    <div class="ann-lbl">Accounts</div><div class="ann-val">Both Cleared</div>
+  </div>
+  <div class="ann-cell">
+    <div class="ann-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+    <div class="ann-lbl">Specialty</div><div class="ann-val">XAU / USD Gold</div>
+  </div>
+</div>
+
+<!-- ───────── STATS BAR ───────── -->
+<div class="stats-bar">
+  <div class="stat-cell"><div class="stat-n" data-count="2">0</div><div class="stat-l">Funded Accounts</div></div>
+  <div class="stat-cell"><div class="stat-n">1 YR</div><div class="stat-l">Together</div></div>
+  <div class="stat-cell"><div class="stat-n" data-count="74">0</div><div class="stat-l">Win Rate %</div></div>
+  <div class="stat-cell"><div class="stat-n">∞</div><div class="stat-l">Best Friends</div></div>
+</div>
+
+<!-- ───────── PROFILES ───────── -->
+<section id="profiles" class="profiles-bg">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">Who We Are</div>
+      <h2 class="sec-h">Two Traders.<br>One Vision.<br>Zero Excuses.</h2>
+      <p class="sec-sub">Precision meets aggression. Different approaches, same result — funded accounts, gold profits, and a friendship that compounds daily.</p>
+    </div>
+    <div class="profiles-grid">
+      <!-- Prameesh -->
+      <div class="profile-card reveal d1">
+        <div class="bracket tl"></div><div class="bracket br"></div>
+        <div class="p-inner">
+          <div class="p-avatar">P</div>
+          <div class="p-role">The Precision Trader</div>
+          <div class="p-name">Prameesh</div>
+          <p class="p-bio">Surgical in execution, patient in strategy. Built his funded account on the philosophy that the best trade is the one worth waiting for. Gold is his arena — XAU/USD is where he dominates.</p>
+          <div class="p-tags">
+            <span class="p-tag">XAU / USD</span><span class="p-tag">Funded Trader</span><span class="p-tag">Gold Stocks</span><span class="p-tag">Risk Management</span><span class="p-tag">Technical Analysis</span>
+          </div>
+          <div class="p-divider"></div>
+          <div class="p-stats">
+            <div class="p-stat"><div class="p-stat-n">XAU</div><div class="p-stat-l">Primary Pair</div></div>
+            <div class="p-stat"><div class="p-stat-n">1:3</div><div class="p-stat-l">Avg RR Ratio</div></div>
+            <div class="p-stat"><div class="p-stat-n">74%</div><div class="p-stat-l">Win Rate</div></div>
+          </div>
+        </div>
+      </div>
+      <!-- Raghul -->
+      <div class="profile-card amber reveal d2">
+        <div class="bracket tl"></div><div class="bracket br"></div>
+        <div class="p-inner">
+          <div class="p-avatar">R</div>
+          <div class="p-role">The Market Tactician</div>
+          <div class="p-name">Raghul</div>
+          <p class="p-bio">Reads the market like a story he already knows the end to. Smart money concepts and momentum mastery cleared his funded challenge and power every gold trade he takes.</p>
+          <div class="p-tags">
+            <span class="p-tag">XAU / USD</span><span class="p-tag">Funded Trader</span><span class="p-tag">Smart Money</span><span class="p-tag">Momentum</span><span class="p-tag">MCX Gold</span>
+          </div>
+          <div class="p-divider"></div>
+          <div class="p-stats">
+            <div class="p-stat"><div class="p-stat-n">SMC</div><div class="p-stat-l">Strategy</div></div>
+            <div class="p-stat"><div class="p-stat-n">1:4</div><div class="p-stat-l">Best Trade RR</div></div>
+            <div class="p-stat"><div class="p-stat-n">MCX</div><div class="p-stat-l">Gold Market</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ───────── FUNDED (BENTO GRID) ───────── -->
+<section id="funded" class="funded-bg">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">Achievement Log</div>
+      <h2 class="sec-h">Funded.<br>Cleared.<br>Proven.</h2>
+      <p class="sec-sub">Both accounts passed. No shortcuts, no luck — just a repeatable process executed with precision under pressure.</p>
+    </div>
+    <div class="bento-grid">
+      <div class="bento-card reveal d1">
+        <div class="bc-firm">FTMO</div><div class="bc-name">Challenge Phase</div>
+        <div class="bc-amount">$100K</div><div class="bc-by">Cleared by <strong>Prameesh</strong></div>
+        <div class="bc-bar"><div class="bc-bar-fill"></div></div>
+      </div>
+      <div class="bento-card reveal d2">
+        <div class="bc-firm">The 5%ers</div><div class="bc-name">Growth Program</div>
+        <div class="bc-amount">$50K</div><div class="bc-by">Cleared by <strong>Raghul</strong></div>
+        <div class="bc-bar"><div class="bc-bar-fill"></div></div>
+      </div>
+      <div class="bento-card reveal d3">
+        <div class="bc-firm">MyFundedFX</div><div class="bc-name">Standard Account</div>
+        <div class="bc-amount">$200K</div><div class="bc-by">Cleared by <strong>Prameesh</strong></div>
+        <div class="bc-bar"><div class="bc-bar-fill"></div></div>
+      </div>
+      <div class="bento-card reveal d1">
+        <div class="bc-firm">Apex Trader</div><div class="bc-name">Evaluation Pass</div>
+        <div class="bc-amount">$150K</div><div class="bc-by">Cleared by <strong>Raghul</strong></div>
+        <div class="bc-bar"><div class="bc-bar-fill"></div></div>
+      </div>
+      <div class="bento-card wide reveal d2">
+        <div class="bc-firm">Combined Portfolio</div><div class="bc-name">Duo Total</div>
+        <div class="bc-amount">$500K</div><div class="bc-by">Cleared by <strong>Prameesh & Raghul</strong></div>
+        <div class="bc-bar"><div class="bc-bar-fill"></div></div>
+      </div>
+      <div class="bento-card bento-next reveal d3">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        <div class="bento-next-h">Next Target</div>
+        <div class="bento-next-s">$1M Funded Pool · 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ───────── GOLD ───────── -->
+<section id="gold" class="gold-bg">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">Primary Market</div>
+      <h2 class="sec-h">Gold Is Our<br>Language.</h2>
+      <p class="sec-sub">XAU/USD is where reputations are built. Two traders who cracked the gold market code and built funded careers from it.</p>
+    </div>
+    <div class="gold-layout">
+      <div class="reveal d1">
+        <div class="gold-main-card">
+          <div class="gold-main-card-border"></div>
+          <div style="position:relative;z-index:1">
+            <div class="gmc-header">
+              <div><div class="gmc-lbl">XAU / USD — Spot Gold</div><div class="gmc-name">Gold</div></div>
+              <div><div class="gmc-price">$2,340</div><div class="gmc-chg">▲ +1.24% Today</div></div>
+            </div>
+            <svg class="gmc-chart" viewBox="0 0 400 88" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cg" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFD700" stop-opacity=".18"/>
+                  <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <polyline points="0,78 35,70 65,74 95,53 120,60 150,38 178,44 205,26 235,32 262,16 288,22 318,8 355,12 400,4" fill="none" stroke="#FFD700" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+              <polyline points="0,78 35,70 65,74 95,53 120,60 150,38 178,44 205,26 235,32 262,16 288,22 318,8 355,12 400,4 400,88 0,88" fill="url(#cg)"/>
+            </svg>
+            <div class="gmc-stats">
+              <div class="gmc-stat"><div class="gmc-stat-l">52W High</div><div class="gmc-stat-v">$2,431</div></div>
+              <div class="gmc-stat"><div class="gmc-stat-l">52W Low</div><div class="gmc-stat-v">$1,810</div></div>
+              <div class="gmc-stat"><div class="gmc-stat-l">YTD Return</div><div class="gmc-stat-v">+18.4%</div></div>
+              <div class="gmc-stat"><div class="gmc-stat-l">Our Win Rate</div><div class="gmc-stat-v">74%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="gold-list reveal d2">
+        <div class="gold-row"><div class="gr-ico"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z"/></svg></div><div><div class="gr-lbl">MCX India</div><div class="gr-name">MCX Gold</div><div class="gr-price">₹71,200 / 10g</div></div><div class="gr-chg">+1.4%</div></div>
+        <div class="gold-row"><div class="gr-ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div><div><div class="gr-lbl">NYSE: GLD</div><div class="gr-name">SPDR Gold ETF</div><div class="gr-price">$215.70</div></div><div class="gr-chg">+0.9%</div></div>
+        <div class="gold-row"><div class="gr-ico"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="gr-lbl">NYSE: NEM</div><div class="gr-name">Newmont Corp</div><div class="gr-price">$42.80</div></div><div class="gr-chg">+2.1%</div></div>
+        <div class="gold-row"><div class="gr-ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div><div class="gr-lbl">NYSE: GOLD</div><div class="gr-name">Barrick Gold</div><div class="gr-price">$18.60</div></div><div class="gr-chg">+1.7%</div></div>
+        <div class="gold-row"><div class="gr-ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="gr-lbl">COMEX</div><div class="gr-name">Gold Futures</div><div class="gr-price">$2,355</div></div><div class="gr-chg">+1.1%</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glow-divider"></div>
+
+<!-- ───────── GOALS ───────── -->
+<section id="goals" class="goals-bg">
+  <div class="container">
+    <div class="reveal">
+      <div class="sec-eyebrow">The Roadmap</div>
+      <h2 class="sec-h">Goals &amp;<br>Milestones.</h2>
+      <p class="sec-sub">Radical transparency — every goal tracked publicly, because accountability is the sharpest edge in trading and in life.</p>
+    </div>
+    <div class="goals-layout">
+      <div class="reveal d1">
+        <div class="goals-col-lbl">// Progress Tracker</div>
+        <div class="goal-item">
+          <div class="goal-hdr"><span class="goal-name">Funded Pool — $1M Total</span><span class="goal-pct">50%</span></div>
+          <div class="goal-track"><div class="goal-fill gold" data-w="50%"></div></div>
+          <div class="goal-meta">$500K cleared · Target: Dec 2026</div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-hdr"><span class="goal-name">Gold Win Rate — 80%</span><span class="goal-pct" style="color:var(--green)">74%</span></div>
+          <div class="goal-track"><div class="goal-fill green" data-w="74%"></div></div>
+          <div class="goal-meta">Current: 74% · Nearly there</div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-hdr"><span class="goal-name">Community — 10K Traders</span><span class="goal-pct" style="color:#FF8C00">30%</span></div>
+          <div class="goal-track"><div class="goal-fill amber" data-w="30%"></div></div>
+          <div class="goal-meta">3,000 members · Target: 2026</div>
+        </div>
+        <div class="goal-item">
+          <div class="goal-hdr"><span class="goal-name">Year 2 Funded — Consistency</span><span class="goal-pct">50%</span></div>
+          <div class="goal-track"><div class="goal-fill gold" data-w="50%"></div></div>
+          <div class="goal-meta">Year 1 complete · Year 2 active</div>
+        </div>
+      </div>
+      <div class="reveal d2">
+        <div class="goals-col-lbl">// Milestone Log</div>
+        <div class="timeline">
+          <div class="tl-row"><div class="tl-dot done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="tl-title">First Funded Account Cleared</div><div class="tl-date">2024 · Both passed the challenge</div></div><span class="tl-badge done">Done</span></div>
+          <div class="tl-row"><div class="tl-dot done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="tl-title">XAU/USD System Perfected</div><div class="tl-date">2024 · Gold strategy locked in</div></div><span class="tl-badge done">Done</span></div>
+          <div class="tl-row"><div class="tl-dot done"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="tl-title">1 Year Anniversary</div><div class="tl-date">2025 · 365 days grinding together</div></div><span class="tl-badge done">Done</span></div>
+          <div class="tl-row"><div class="tl-dot prog"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="tl-title">Multiple Funded Accounts Active</div><div class="tl-date">2025–2026 · Scaling up phase</div></div><span class="tl-badge prog">Active</span></div>
+          <div class="tl-row"><div class="tl-dot soon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div><div class="tl-title">Launch Trading Community</div><div class="tl-date">2026 · Teaching what we know</div></div><span class="tl-badge soon">Soon</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── BOND ───────── -->
+<section id="bond" class="bond-bg">
+  <div class="container">
+    <div class="bond-center reveal">
+      <div class="sec-eyebrow" style="justify-content:center">The Bond</div>
+      <h2 class="sec-h">Brothers<br>In The Market.</h2>
+      <p class="sec-sub" style="margin:0 auto">Not just trading partners — best friends who found their edge together and built something neither could have built alone.</p>
+      <div class="avatars">
+        <div class="av p">P</div>
+        <div class="av-sep">×</div>
+        <div class="av r">R</div>
+      </div>
+    </div>
+    <div class="bond-cards reveal">
+      <div class="bond-card"><div class="bond-ico"><svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div><div class="bond-title">Daily Trade Reviews</div><div class="bond-desc">Every trade dissected together — wins, losses, near misses. No ego, pure analysis. That's how both cleared funded challenges.</div></div>
+      <div class="bond-card"><div class="bond-ico"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div class="bond-title">Accountability System</div><div class="bond-desc">Weekly reviews, shared watchlists, and the honesty only best friends can give each other in the markets.</div></div>
+      <div class="bond-card"><div class="bond-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="bond-title">Two Minds, One Edge</div><div class="bond-desc">Prameesh's precision entries + Raghul's macro structure = a compound edge that grows with every trade.</div></div>
+      <div class="bond-card"><div class="bond-ico"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><div class="bond-title">Built for Generations</div><div class="bond-desc">One year is just the beginning. Full-time trading, generational wealth, and a community of funded winners.</div></div>
+    </div>
+    <div class="f-cta reveal" style="text-align:center;margin-top:4rem">
+      <a href="mailto:hello@prameeshraghul.com" class="btn-primary" style="font-size:.88rem;padding:1rem 3.5rem">Get In Touch</a>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── FOOTER ───────── -->
+<footer>
+  <div class="f-logo">Prameesh × Raghul</div>
+  <div class="f-tagline">Funded Traders · Gold Specialists · Best Friends · 1 Year Strong</div>
+  <div class="f-socials">
+    <a class="f-social" href="#">X</a>
+    <a class="f-social" href="#">YT</a>
+    <a class="f-social" href="#">IG</a>
+    <a class="f-social" href="#">IN</a>
+  </div>
+  <div class="f-cta"><a href="mailto:hello@prameeshraghul.com" class="btn-outline" style="font-size:.75rem;padding:.7rem 2rem">hello@prameeshraghul.com</a></div>
+  <div class="f-copy">© 2026 Prameesh & Raghul · Built different. Trade different.</div>
+</footer>
+
+<script>
+/* ── PARTICLE STARFIELD ── */
+const cv = document.getElementById('starfield'), cx = cv.getContext('2d');
+let W, H;
+const resize = () => { W = cv.width = innerWidth; H = cv.height = innerHeight; };
+resize(); addEventListener('resize', resize);
+const stars = Array.from({length:100}, () => ({
+  x: Math.random()*2000, y: Math.random()*1200,
+  vx: (Math.random()-.5)*.25, vy: (Math.random()-.5)*.25,
+  r: Math.random()*.9+.15, o: Math.random()*.35+.04
+}));
+function drawStars() {
+  cx.clearRect(0,0,W,H);
+  stars.forEach(s => {
+    s.x = (s.x+s.vx+W)%W; s.y = (s.y+s.vy+H)%H;
+    cx.beginPath(); cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    cx.fillStyle = `rgba(255,215,0,${s.o})`; cx.fill();
+  });
+  for(let i=0;i<stars.length;i++) for(let j=i+1;j<stars.length;j++) {
+    const dx=stars[i].x-stars[j].x, dy=stars[i].y-stars[j].y, d=Math.sqrt(dx*dx+dy*dy);
+    if(d<100) { cx.beginPath(); cx.moveTo(stars[i].x,stars[i].y); cx.lineTo(stars[j].x,stars[j].y); cx.strokeStyle=`rgba(255,215,0,${.03*(1-d/100)})`; cx.lineWidth=.5; cx.stroke(); }
+  }
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+/* ── CURSOR ── */
+const dot = document.getElementById('cursor-dot'), ring = document.getElementById('cursor-ring');
+let mx=0, my=0, rx=0, ry=0;
+document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+(function trackRing() { rx+=(mx-rx)*.13; ry+=(my-ry)*.13; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(trackRing); })();
+document.querySelectorAll('a,button').forEach(el => {
+  el.addEventListener('mouseenter', () => { ring.style.width='48px'; ring.style.height='48px'; ring.style.borderColor='rgba(255,215,0,1)'; });
+  el.addEventListener('mouseleave', () => { ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(255,215,0,0.55)'; });
+});
+
+/* ── ACETERNITY SPOTLIGHT ── */
+document.querySelectorAll('.profile-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX-r.left)/r.width*100)+'%');
+    card.style.setProperty('--my', ((e.clientY-r.top)/r.height*100)+'%');
+  });
+});
+
+/* ── SCROLL REVEAL ── */
+const ro = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); }), {threshold:.08});
+document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
+
+/* ── GOAL BARS ── */
+document.querySelectorAll('.goal-fill[data-w]').forEach(bar => {
+  const w = bar.getAttribute('data-w');
+  const bo = new IntersectionObserver(es => es.forEach(e => { if(e.isIntersecting) { setTimeout(()=>bar.style.width=w, 180); bo.unobserve(e.target); } }), {threshold:.3});
+  bo.observe(bar);
+});
+
+/* ── COUNT UP ── */
+document.querySelectorAll('[data-count]').forEach(el => {
+  const target = +el.getAttribute('data-count');
+  const bo = new IntersectionObserver(es => es.forEach(e => {
+    if(e.isIntersecting) { let c=0; const iv=setInterval(()=>{ c=Math.min(c+1,target); el.textContent=c; if(c>=target) clearInterval(iv); },45); bo.unobserve(e.target); }
+  }), {threshold:.5});
+  bo.observe(el);
+});
+
+/* ── NAV SCROLL ── */
+addEventListener('scroll', () => {
+  document.querySelector('nav').style.background = scrollY>60 ? 'rgba(2,4,8,0.96)' : 'rgba(2,4,8,0.7)';
+});
+</script>
+</body>
+</html>
